@@ -1,10 +1,11 @@
-# But Market Toon – magasin virtuel en 2D
+# But Market 360° – magasin virtuel en 3D
 
 ## 🎯 Objectif
 
-Cette version pousse l'ancien TP « Ticket de caisse » vers une **expérience de shopping gamifiée** : on explore un magasin 2D façon
-cartoon, on remplit son panier en interagissant avec les rayons et l'on passe en caisse auprès de caissiers animés. L'assistant
-IA Mia est toujours présent pour créer en direct les produits absents du catalogue – aucune commande n'est bloquée.
+Cette évolution du TP « Ticket de caisse » propulse l'expérience dans une **visite libre en 3D** : on s'immerge dans un supermarché
+cartoon entièrement modélisé, on déambule à la première personne comme dans un jeu vidéo et l'on interagit avec les rayons, Mia
+l'IA et les caissiers pour finaliser ses achats. Mia continue de générer en direct les produits manquants pour garantir que
+chaque commande aboutisse sans friction.
 
 ---
 
@@ -12,11 +13,11 @@ IA Mia est toujours présent pour créer en direct les produits absents du catal
 
 | Domaine | Description |
 | --- | --- |
-| Magasin jouable | Carte 2D générée dynamiquement (ZQSD/flèches) avec murs, rayons, PNJ et caisses illustrées. |
-| Rayons interactifs | Chaque étal ouvre un mini catalogue ciblé (fruits, frais, boissons…) avec ajout instantané au panier. |
-| PNJ IA | Mia, chatbot intégré dans le magasin, écoute les requêtes, appelle l'IA serveur `/api/lookup` et ajoute l'article créé. |
-| Passage en caisse | Interaction directe avec les caissiers : résumé panier, sélection du client, validation et ticket généré. |
-| Esthétique cartoon | Nouvelle charte graphique pastel, tuiles animées, personnages stylisés et panneaux arrondis. |
+| Magasin jouable | Scène 3D temps réel (Three.js) avec déplacements libres au clavier, pointer lock et collisions contre les rayons. |
+| Rayons interactifs | Six allées matérialisées en volume ouvrent des catalogues ciblés avec ajout instantané au panier. |
+| PNJ IA | Mia flotte dans l'espace 3D, répond aux requêtes et crée à la volée les produits introuvables via `/api/lookup`. |
+| Passage en caisse | Comptoirs 3D animés : s'approcher d'un caissier active la modale de paiement et imprime le ticket. |
+| Identité cartoon | Éclairage néon, signalétique flottante, labels HUD projetés en 3D et overlay immersif d'entrée/sortie. |
 
 ---
 
@@ -32,8 +33,8 @@ app/
 ├── seed_data.py          # Chargement initial du catalogue et des caissiers
 ├── views.py              # Routes web et API (catalogue, IA, checkout, ticket)
 ├── static/
-│   ├── css/style.css     # Thème cartoon + carte 2D
-│   └── js/app.js         # Mouvement, interactions PNJ, panier et caisse
+│   ├── css/style.css     # Thème cartoon pastel + scène 3D et overlays HUD
+│   └── js/app.js         # Moteur 3D (Three.js), déplacements, interactions PNJ, panier et caisse
 └── templates/            # Vues HTML (base, magasin, ticket)
 ```
 
@@ -59,11 +60,11 @@ app/
 
 3. **Explorer le magasin**
 
-   - Rendez-vous sur `http://127.0.0.1:5000`.
-   - Déplacez-vous avec **ZQSD** ou les flèches.
-   - Appuyez sur **Espace** ou **Entrée** devant un rayon pour consulter les produits.
-   - Parlez à **Mia 🤖** pour faire apparaître des références inédites générées par l'IA.
-   - Placez-vous devant un **caissier 💳** pour finaliser la commande et afficher le ticket.
+   - Rendez-vous sur `http://127.0.0.1:5000` et cliquez sur « Entrer » pour activer la visite 3D.
+   - Orientez-vous avec la **souris**, déplacez-vous avec **ZQSD/WASD** ou les flèches (maintenez **Shift** pour accélérer).
+   - Approchez-vous d'un rayon et pressez **E** (ou Espace/Entrée) pour ouvrir les produits correspondants.
+   - Discutez avec **Mia 🤖** pour générer instantanément tout article manquant dans la base.
+   - Avancez vers un **caissier 💳** pour lancer la caisse animée et imprimer le ticket.
 
 ---
 
@@ -86,4 +87,4 @@ app/
 | Ajustement panier | Modifier la quantité d'une ligne dans le panneau panier | Totaux recalculés instantanément côté HUD. |
 | Ticket durable | Rafraîchir `/receipt/<id>` | Ticket accessible en lecture seule. |
 
-Bonnes courses dans But Market Toon !
+Bonnes courses immersives dans But Market 360° !

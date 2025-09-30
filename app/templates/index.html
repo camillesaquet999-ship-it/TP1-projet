@@ -1,14 +1,14 @@
 {% extends "base.html" %}
 
-{% block title %}Courses virtuelles - But Market Toon{% endblock %}
+{% block title %}Courses virtuelles - But Market 360°{% endblock %}
 
 {% block content %}
 <section class="store-app">
   <aside class="hud">
-    <h1>But Market Toon</h1>
+    <h1>But Market 360°</h1>
     <p class="intro">
-      Explore un magasin 2D plein de vie&nbsp;! Déplace-toi avec <strong>ZQSD</strong> ou les flèches, parle aux personnages et
-      remplis ton panier avant de passer en caisse.
+      Explore maintenant un magasin 3D libre comme dans un jeu vidéo&nbsp;! Déplace-toi avec <strong>ZQSD</strong> ou les flèches,
+      regarde autour de toi avec la souris, discute avec les personnages et remplis ton panier avant de passer en caisse.
     </p>
     <div class="hud-panel">
       <h2>Panier</h2>
@@ -36,11 +36,17 @@
     </div>
   </aside>
   <div class="world">
-    <div id="store-map" class="store-map"></div>
-    <div id="entity-layer" class="entity-layer">
-      <div id="player" class="character player">
-        <div class="bubble">🛒</div>
-        <div class="label">Toi</div>
+    <div class="stage" id="store-stage">
+      <canvas id="store-canvas" aria-label="Scène 3D du magasin"></canvas>
+      <div id="label-overlay" class="label-overlay" aria-hidden="true"></div>
+      <div id="interaction-hint" class="interaction-hint hidden" role="status" aria-live="polite"></div>
+      <div id="experience-overlay" class="experience-overlay">
+        <div class="overlay-card">
+          <h2>Visite immersive</h2>
+          <p id="experience-message">Clique sur «&nbsp;Entrer&nbsp;» pour débuter la visite 3D.</p>
+          <button id="enter-store" class="primary">Entrer dans le magasin</button>
+          <p class="overlay-keys">ZQSD / WASD · Souris · E pour interagir</p>
+        </div>
       </div>
     </div>
   </div>
