@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block title %}Courses virtuelles - But Market{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <div class="hero-text">
+    <h1>Faites vos courses dans notre magasin virtuel</h1>
+    <p>
+      Scannez, ajoutez au panier et laissez notre assistant IA compléter votre commande en cas d'imprévu.
+    </p>
+    <button id="start-shopping" class="primary">Commencer mes courses</button>
+  </div>
+  <div class="hero-visual">
+    <div class="floating-card"></div>
+    <div class="floating-card delay"></div>
+    <div class="floating-card"></div>
+  </div>
+</section>
+
+<section id="store" class="store hidden">
+  <div class="toolbar">
+    <div class="search">
+      <label for="search-product">Scanner un produit</label>
+      <div class="search-bar">
+        <input id="search-product" type="text" placeholder="Nom ou code" autocomplete="off" />
+        <button id="scan-button" type="button">Ajouter</button>
+      </div>
+      <small class="hint">Entrez un nom : si l'article n'existe pas, l'IA le crée instantanément.</small>
+    </div>
+    <div class="cashier">
+      <label for="cashier">Caissier</label>
+      <select id="cashier">
+        {% for cashier in cashiers %}
+        <option value="{{ cashier.id }}">{{ cashier.display_name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="customer">
+      <label for="customer">Nom du client</label>
+      <input id="customer" type="text" placeholder="Client anonyme" />
+    </div>
+  </div>
+
+  <div class="store-layout">
+    <section class="catalog">
+      <h2>Rayons produits</h2>
+      <div class="product-grid" id="product-grid">
+        {% for product in products %}
+        <article class="product-card" data-product-id="{{ product.id }}">
+          <header>
+            <h3>{{ product.name }}</h3>
+            <span class="code">{{ product.code }}</span>
+          </header>
+          <div class="details">
+            <p class="price">{{ '%.2f' | format(product.price_ht) }} € HT</p>
+            <p class="vat">TVA {{ (product.vat_rate * 100) | round(1) }}%</p>
+            <p class="unit">{{ product.unit_quantity }} {{ product.unit }}</p>
+            <p class="origin">Origine : {{ product.origin }}</p>
+          </div>
+          <footer>
+            <label>Quantité</label>
+            <input type="number" step="0.1" min="0.1" value="1" />
+            <button class="add-to-cart">Ajouter</button>
+          </footer>
+        </article>
+        {% endfor %}
+      </div>
+    </section>
+
+    <aside class="cart" id="cart">
+      <h2>Panier</h2>
+      <ul class="cart-items" id="cart-items"></ul>
+      <div class="totals">
+        <p><span>Total HT</span><strong id="total-ht">0.00 €</strong></p>
+        <p><span>Total TVA</span><strong id="total-tva">0.00 €</strong></p>
+        <p><span>Total TTC</span><strong id="total-ttc">0.00 €</strong></p>
+      </div>
+      <button id="checkout" class="primary" disabled>Encaisser</button>
+      <div class="status" id="status"></div>
+    </aside>
+  </div>
+</section>
+{% endblock %}

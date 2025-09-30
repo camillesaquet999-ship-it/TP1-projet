@@ -1,175 +1,111 @@
+# But Market 360° – plateforme de courses virtuelle
 
+## 🎯 Objectif
 
-#  Ticket de caisse – TP Python
+Cette évolution transforme le TP « Ticket de caisse » en une **application web immersive** permettant de réaliser des courses virtuelles avec :
 
-##  Présentation
+- un **catalogue enrichi** (+30 produits) persisté en SQLite ;
+- une **interface moderne animée** pour scanner, visualiser et encaisser ;
+- une **IA embarquée** générant instantanément les produits absents du catalogue ;
+- la production automatique d’un **ticket de caisse numérique et textuel**.
 
-Ce projet consiste à développer un **système de génération de tickets de caisse** en Python.
-Il s’agit d’un TP encadré visant à apprendre :
-
-* l’utilisation de **Python** en ligne de commande,
-* la **gestion de données** (catalogue produits, TVA, poids/volume),
-* le **versionnement Git** et l’organisation de projet (**Trello, GitHub, branches, tags**),
-* la **gestion des besoins client** (Lot 1 → Lot 2 avec nouvelles fonctionnalités).
-
----
-
-##  Fonctionnalités
-
-### Lot 1
-
-* Catalogue produit simple (code, nom, prix HT).
-* Calcul **Total HT, TVA (10%), Total TTC**.
-* Affichage ticket formaté (colonnes article, quantité, prix unitaire, total HT).
-* README explicatif et plan de tests.
-
-### Lot 2
-
-* Catalogue enrichi (code, nom, prix HT, TVA spécifique, poids/volume, origine).
-* Gestion de la **TVA variable** (10% ou 20%).
-* Affichage du **poids/volume unitaire** et du **poids/volume total**.
-* Affichage de l’**origine** des produits.
-* Ticket complet, réaliste, proche d’un ticket de caisse imprimé.
-* Nouveaux tests (cas TVA mixte, poids calculé, plusieurs produits).
+L’expérience simule un passage en caisse complet (client, caissier, panier, encaissement) et reste extensible vers d’autres canaux (PDF, API externe, etc.).
 
 ---
 
-##  Structure du projet
+## ✨ Fonctionnalités principales
 
-```
-.
-├── main.py        # Script Lot 1
-├── main2.py       # Script Lot 2
-├── README.md      # Documentation
-├── tests/         # (optionnel) Dossiers de tests unitaires
-└── data/          # (optionnel) Base produits JSON ou CSV
-```
-
----
-
-##  Installation
-
-### 1. Cloner le projet
-
-```bash
-git clone https://github.com/jb2brest/tpiut.git
-cd tpiut
-git checkout 2025-Lannion-3A2-SAQUET-ROINET
-```
-
-### 2. Prérequis
-
-* Python ≥ 3.8
-* Aucune dépendance externe nécessaire (utilise uniquement la bibliothèque standard).
+| Domaine | Description |
+| --- | --- |
+| Catalogue dynamique | 33 produits pré-chargés (épicerie, frais, boissons, hygiène, animaux) avec TVA, unité, origine et prix HT. |
+| Assistant IA | Lors d’un scan d’article inconnu, un moteur heuristique catégorise le produit, génère un code, un prix cohérent, une TVA adaptée et l’ajoute à la base sans interrompre la commande. |
+| Panier interactif | Ajout rapide depuis les cartes produit, mise à jour des quantités, suppression, calcul automatique HT/TVA/TTC. |
+| Encaissement | Sélection du caissier, saisie du client, validation côté serveur, sauvegarde de la commande et des lignes de ticket. |
+| Ticket réaliste | Vue récapitulative responsive + ticket ASCII imprimable (et option d’impression navigateur). |
+| API JSON | Points d’entrée `/api/products`, `/api/lookup`, `/checkout` pour intégrer l’application à d’autres systèmes. |
 
 ---
 
-##  Utilisation
-
-### Lot 1 (TVA fixe 10%)
-
-```bash
-python3 main.py "But Market" "Lisa" "C01:2|C02:1|C03:3"
-```
-
-**Exemple de sortie** :
+## 🏗️ Architecture
 
 ```
-========================================
-              But Market               
-Vendeur : Lisa                 30/09/2025 14:12
-----------------------------------------
-Article              Qté  PU HT Total HT
-----------------------------------------
-Coca Cola              2   1.20    2.40
-Biscottes              1   2.50    2.50
-Crackers               3   1.80    5.40
-----------------------------------------
-Total HT                          10.30 €
-TVA (10%)                          1.03 €
-Total TTC                         11.33 €
-========================================
-   Merci de votre visite et à bientôt !  
-========================================
+app/
+├── __init__.py           # Création de l’application Flask
+├── ai.py                 # Génération déterministe des produits « IA »
+├── database.py           # Connexion SQLite + session_scope
+├── models.py             # SQLAlchemy ORM (Product, Cashier, Order, OrderItem)
+├── receipts.py           # Construction du ticket ASCII
+├── seed_data.py          # Chargement initial du catalogue et des caissiers
+├── views.py              # Routes web et API (catalogue, IA, checkout, ticket)
+├── static/
+│   ├── css/style.css     # Thème néon, animations et responsive design
+│   └── js/app.js         # Gestion du panier, appels API, UI dynamique
+└── templates/            # Vues HTML (base, accueil, ticket)
 ```
+
+- **Flask 3** pilote les routes HTML/API.
+- **SQLAlchemy 2** gère les entités et la persistance.
+- Le moteur IA repose sur des règles métier reproductibles (hash + bibliothèques de mots clés) pour garantir un prix réaliste et une origine cohérente.
+- Les tickets sont stockés pour consultation ultérieure (`/receipt/<id>`).
 
 ---
 
-### Lot 2 (TVA variable, poids/volume et origine)
+## 🚀 Mise en route
 
-```bash
-python3 main.py "But Market" "Lisa" "C01:1|C02:3|C03:4"
-```
+1. **Installer les dépendances**
 
-**Exemple de sortie** :
+   ```bash
+   python3 -m venv .venv
+   source .venv/bin/activate
+   pip install -r requirements.txt
+   ```
 
-```
-But Market
-Ticket numéro : 2200
-Date : 30/09/2025
+2. **Lancer le serveur**
 
-Vous avez été servi par : Lisa
+   ```bash
+   flask --app app:create_app --debug run
+   ```
 
-NB  Desc.           Pds/vol. unit. Pds/vol. total Orig.        HT   TVA    Total
-1   pack de coca    2kg            2kg            Lituanie      5€ 20%    6.0€
-3   kilo de pdt     1kg            3kg            Espagne       1€ 10%    3.3€
-4   pack Biscotte   950g           3.8kg          France        2€ 10%    8.8€
+   > À la première exécution, la base SQLite `app/store.db` est créée et alimentée automatiquement.
 
-Total HT            16.0€
-Total TVA           2.1€
-Total TTC           18.1€
-```
+3. **Explorer l’expérience**
 
----
-
-##  Options d’évolution
-
-* Export du ticket en **PDF** ou **fichier texte**.
-* Interface graphique (Tkinter ou PyQt).
-* Base de données produits externe (CSV/JSON/SQLite).
-* Gestion des réductions et promotions.
+   - Rendez-vous sur `http://127.0.0.1:5000`.
+   - Cliquez sur « Commencer mes courses » pour dévoiler les rayons.
+   - Scannez un produit (ex. `C01`, `pâtes linguine`, `jus mangue`).
+   - L’IA crée l’article si nécessaire puis l’ajoute au panier.
+   - Sélectionnez un caissier, saisissez un client et encaissez pour afficher le ticket.
 
 ---
 
-##  Plan de tests
+## 🧠 Comment fonctionne l’IA produit ?
 
-### Lot 1
+1. **Analyse sémantique** du nom recherché (normalisation, recherche par mots clés).
+2. **Sélection d’un gabarit** (fruits, boissons, hygiène…) avec TVA, unité et origine typiques.
+3. **Génération déterministe** du prix et de l’origine via des fonctions de hachage (résultats stables).
+4. **Création persistante** dans la base `products` avec le drapeau `created_by_ai`.
 
-| Objectif                       | Commande                                      | Résultat attendu                                      |                                                          |
-| ------------------------------ | --------------------------------------------- | ----------------------------------------------------- | -------------------------------------------------------- |
-| Ticket avec 1 produit          | `python3 main.py "But Market" "Lisa" "C01:1"` | Ticket avec Coca Cola x1, HT=1.20, TVA=0.12, TTC=1.32 |                                                          |
-| Ticket avec plusieurs produits | `python3 main.py "But Market" "Lisa" "C01:2   | C02:1"`                                               | Ticket avec Coca Cola x2 + Biscottes x1, totaux corrects |
-| Code invalide                  | `python3 main.py "But Market" "Lisa" "C99:1"` | Produit ignoré, ticket sans erreur                    |                                                          |
-
-### Lot 2
-
-| Objectif             | Commande                                      | Résultat attendu                            |         |                                                             |
-| -------------------- | --------------------------------------------- | ------------------------------------------- | ------- | ----------------------------------------------------------- |
-| Produit avec TVA 20% | `python3 main.py "But Market" "Lisa" "C01:1"` | Affiche TVA 20% sur Coca, total TTC correct |         |                                                             |
-| Calcul poids total   | `python3 main.py "But Market" "Lisa" "C02:3"` | Poids total = 3kg                           |         |                                                             |
-| Mix TVA et poids     | `python3 main.py "But Market" "Lisa" "C01:1   | C02:3                                       | C03:4"` | Affiche poids total par produit, TVA mixte, totaux corrects |
+Ainsi, aucune commande n’est bloquée : chaque référence inconnue est créée « en direct » avec des informations commerciales plausibles.
 
 ---
 
-##  Livraison
+## 🧪 Scénarios de test rapides
 
-1. **Lot 1**
-
-   * Développement + commit
-   * Livraison → `git tag 3A2-B1-lot1 && git push origin 3A2-B1-lot1`
-
-2. **Lot 2**
-
-   * Développement + commit
-   * Livraison → `git tag 3A2-B1-lot2 && git push origin 3A2-B1-lot2`
+| Objectif | Action | Résultat attendu |
+| --- | --- | --- |
+| Ajout classique | Cliquer sur « Ajouter » pour `Coca Cola 1L` (quantité 2) | Panier mis à jour, totaux recalculés, pas d’erreur. |
+| Création IA | Scanner `jus mangue passion` | Produit généré (code `DRK-*`), panier mis à jour, message vert. |
+| Encaissement complet | Panier avec au moins 2 articles, choix d’un caissier, cliquer sur « Encaisser » | Redirection vers `/receipt/<id>`, ticket HTML + ASCII disponible. |
+| Mise à jour panier | Modifier la quantité d’une ligne dans le panier | Totaux recalculés en temps réel. |
+| Suppression | Retirer un article depuis le panier | Ligne supprimée, totaux actualisés. |
 
 ---
 
-##  Binôme
+## 🔮 Pistes d’amélioration
 
-* **Camille Saquet**
-* **Evan Roinet**
+- Export PDF ou envoi automatique par e-mail/SMS.
+- Gestion des promotions, cartes de fidélité, paiement en ligne.
+- Tableau de bord analytique (ventes par rayon, panier moyen).
+- Intégration d’un moteur de recommandation produit en temps réel.
 
-Groupe : **3A2 – Lannion 2025**
-
-
+Bonnes courses dans But Market 360° !
