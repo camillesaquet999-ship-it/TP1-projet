@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block title %}Courses virtuelles - But Market Toon{% endblock %}
+
+{% block content %}
+<section class="store-app">
+  <aside class="hud">
+    <h1>But Market Toon</h1>
+    <p class="intro">
+      Explore un magasin 2D plein de vie&nbsp;! Déplace-toi avec <strong>ZQSD</strong> ou les flèches, parle aux personnages et
+      remplis ton panier avant de passer en caisse.
+    </p>
+    <div class="hud-panel">
+      <h2>Panier</h2>
+      <ul class="cart-items" id="cart-items"></ul>
+      <div class="totals">
+        <p><span>Total HT</span><strong id="total-ht">0,00&nbsp;€</strong></p>
+        <p><span>Total TVA</span><strong id="total-tva">0,00&nbsp;€</strong></p>
+        <p><span>Total TTC</span><strong id="total-ttc">0,00&nbsp;€</strong></p>
+      </div>
+      <label class="customer-field">
+        <span>Nom du client</span>
+        <input id="customer" type="text" placeholder="Client anonyme" autocomplete="off" />
+      </label>
+      <button id="checkout" class="primary" disabled>Choisir une caisse</button>
+      <div class="status" id="status"></div>
+    </div>
+    <div class="legend hud-panel">
+      <h3>Légende</h3>
+      <ul>
+        <li><span>🛒</span> Vous</li>
+        <li><span>🤖</span> Mia l'IA créatrice</li>
+        <li><span>💳</span> Caissiers</li>
+        <li><span>📦</span> Rayons interactifs</li>
+      </ul>
+    </div>
+  </aside>
+  <div class="world">
+    <div id="store-map" class="store-map"></div>
+    <div id="entity-layer" class="entity-layer">
+      <div id="player" class="character player">
+        <div class="bubble">🛒</div>
+        <div class="label">Toi</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="modal hidden" id="shelf-modal" aria-hidden="true">
+  <div class="modal-panel">
+    <button class="modal-close" data-close="shelf-modal" aria-label="Fermer le rayon">×</button>
+    <h2 id="shelf-title"></h2>
+    <p id="shelf-description" class="modal-subtitle"></p>
+    <div class="modal-search">
+      <input type="search" id="shelf-search" placeholder="Rechercher un article dans le rayon" autocomplete="off" />
+    </div>
+    <div id="shelf-products" class="modal-products"></div>
+  </div>
+</div>
+
+<div class="modal hidden" id="chat-modal" aria-hidden="true">
+  <div class="modal-panel chat-panel">
+    <button class="modal-close" data-close="chat-modal" aria-label="Fermer la discussion">×</button>
+    <h2>Mia – magicienne IA</h2>
+    <div id="chat-log" class="chat-log"></div>
+    <form id="chat-form" autocomplete="off">
+      <input type="text" id="chat-input" placeholder="Demande un produit ou une idée" required />
+      <button type="submit">Envoyer</button>
+    </form>
+  </div>
+</div>
+
+<div class="modal hidden" id="checkout-modal" aria-hidden="true">
+  <div class="modal-panel checkout-panel">
+    <button class="modal-close" data-close="checkout-modal" aria-label="Fermer la caisse">×</button>
+    <h2>Passage en caisse</h2>
+    <p id="checkout-caption"></p>
+    <div class="checkout-summary">
+      <ul id="checkout-items"></ul>
+      <div class="totals">
+        <p><span>Total HT</span><strong id="modal-total-ht">0,00&nbsp;€</strong></p>
+        <p><span>Total TVA</span><strong id="modal-total-tva">0,00&nbsp;€</strong></p>
+        <p><span>Total TTC</span><strong id="modal-total-ttc">0,00&nbsp;€</strong></p>
+      </div>
+    </div>
+    <label class="customer-field">
+      <span>Nom du client</span>
+      <input id="modal-customer" type="text" placeholder="Client anonyme" />
+    </label>
+    <button id="confirm-checkout" class="primary">Imprimer le ticket</button>
+    <div class="status" id="checkout-status"></div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  window.storeBootstrap = {
+    products: {{ products|tojson|safe }},
+    cashiers: {{ cashiers|tojson|safe }}
+  };
+</script>
+{% endblock %}
