@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}Ticket de caisse - But Market{% endblock %}
+
+{% block content %}
+<section class="receipt-wrapper">
+  <div class="receipt">
+    <h1>Ticket de caisse</h1>
+    <p><strong>Magasin :</strong> But Market 360°</p>
+    <p><strong>Caissier :</strong> {{ order.cashier.display_name }}</p>
+    <p><strong>Client :</strong> {{ order.customer_name }}</p>
+    <p><strong>Date :</strong> {{ order.created_at.strftime('%d/%m/%Y %H:%M') }}</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Article</th>
+          <th>Quantité</th>
+          <th>PU HT</th>
+          <th>TVA</th>
+          <th>Total TTC</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in order.items %}
+        <tr>
+          <td>
+            <span class="name">{{ item.product.name }}</span>
+            <span class="meta">{{ item.product.unit_quantity }} {{ item.product.unit }} · Origine {{ item.product.origin }}</span>
+          </td>
+          <td>{{ '%.2f'|format(item.quantity) if item.quantity % 1 else item.quantity|int }}</td>
+          <td>{{ '%.2f'|format(item.unit_price_ht) }} €</td>
+          <td>{{ '%.1f'|format(item.vat_rate * 100) }}%</td>
+          <td>{{ '%.2f'|format(item.total_ttc) }} €</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <div class="totals">
+      <p><span>Total HT</span><strong>{{ '%.2f'|format(order.total_ht()) }} €</strong></p>
+      <p><span>Total TVA</span><strong>{{ '%.2f'|format(order.total_tva()) }} €</strong></p>
+      <p><span>Total TTC</span><strong>{{ '%.2f'|format(order.total_ttc()) }} €</strong></p>
+    </div>
+
+    <div class="actions">
+      <button onclick="window.print()" class="primary">Imprimer</button>
+      <button id="show-text" type="button">Voir le ticket texte</button>
+    </div>
+
+    <pre id="text-ticket" class="hidden">{{ receipt_text }}</pre>
+  </div>
+</section>
+{% endblock %}
